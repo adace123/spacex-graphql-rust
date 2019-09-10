@@ -1,4 +1,4 @@
-use juniper::GraphQLInputObject;
+use juniper::{GraphQLInputObject, GraphQLEnum};
 use serde::{Deserialize, Serialize};
 
 pub fn build_querystring(options: Vec<(&str, Option<String>)>) -> String {
@@ -17,22 +17,43 @@ pub fn build_querystring(options: Vec<(&str, Option<String>)>) -> String {
 
 pub trait BaseQueryOptions {
     fn get_querystring(self) -> String;
-    
+}
+
+#[derive(Serialize, Deserialize, Debug, GraphQLEnum)]
+pub enum Ordering {
+    Asc, 
+    Desc
+}
+
+impl std::fmt::Display for Ordering {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let fmt_string = match *self {
+            Ordering::Asc => "asc",
+            Ordering::Desc => "desc"
+        };
+        write!(f, "{}", fmt_string)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLInputObject)]
-pub struct LaunchpadQueryOptions {
-    pub id: Option<bool>,
-    pub limit: Option<i32>,
-    pub offset: Option<i32>
+#[graphql(name = "output_control_options")]
+pub struct OutputControlOptions {
+    id: Option<bool>,
+    limit: Option<i32>,
+    offset: Option<i32>,
+    sort: Option<String>,
+    order: Option<Ordering>
 }
 
-impl BaseQueryOptions for LaunchpadQueryOptions {
+
+impl BaseQueryOptions for OutputControlOptions {
     fn get_querystring(self) -> String {
-        let fields: Vec<(&str, Option<String>)> = vec![
+        let fields: Vec<(&str, Option<String>)> = vec! [
             ("id", self.id.map(|i| i.to_string())),
             ("limit", self.limit.map(|l| l.to_string())),
-            ("offset", self.offset.map(|o| o.to_string()))
+            ("offset", self.offset.map(|o| o.to_string())),
+            ("sort", self.sort.map(|s| s.to_string())),
+            ("order", self.order.map(|o| o.to_string()))
         ];
         build_querystring(fields)
     }
@@ -63,6 +84,24 @@ impl BaseQueryOptions for CapsuleQueryOptions {
             ("mission", self.mission),
             ("landings", self.landings.map(|l| l.to_string())),
             ("type", self._type)
+        ];
+        build_querystring(fields)
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, GraphQLInputObject)]
+pub struct LaunchpadQueryOptions {
+    pub id: Option<bool>,
+    pub limit: Option<i32>,
+    pub offset: Option<i32>
+}
+
+impl BaseQueryOptions for LaunchpadQueryOptions {
+    fn get_querystring(self) -> String {
+        let fields: Vec<(&str, Option<String>)> = vec![
+            ("id", self.id.map(|i| i.to_string())),
+            ("limit", self.limit.map(|l| l.to_string())),
+            ("offset", self.offset.map(|o| o.to_string()))
         ];
         build_querystring(fields)
     }
