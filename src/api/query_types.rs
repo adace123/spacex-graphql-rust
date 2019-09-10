@@ -36,7 +36,6 @@ impl std::fmt::Display for Ordering {
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLInputObject)]
-#[graphql(name = "output_control_options")]
 pub struct OutputControlOptions {
     id: Option<bool>,
     limit: Option<i32>,

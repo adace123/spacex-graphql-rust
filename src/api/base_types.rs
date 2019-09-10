@@ -2,7 +2,7 @@ use juniper::{GraphQLEnum, GraphQLObject};
 use serde::{Deserialize, Serialize};
 
 pub trait SpaceXResource {
-    
+    fn resource_name() -> String;
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLEnum)]
@@ -11,6 +11,16 @@ pub enum DateFilter {
     Upcoming,
     #[graphql(name = "past")]
     Past,
+}
+
+impl std::fmt::Display for DateFilter {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let fmt_string = match *self {
+            DateFilter::Upcoming => "upcoming",
+            DateFilter::Past => "past"
+        };
+        write!(f, "{}", fmt_string)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLObject)]
@@ -22,6 +32,9 @@ pub struct LaunchpadLocation {
 }
 
 impl SpaceXResource for LaunchpadLocation {
+    fn resource_name() -> String {
+        String::from("launchpad_location")
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLObject)]
@@ -39,7 +52,11 @@ pub struct Launchpad {
     pub site_name_long: String,
 }
 
-impl SpaceXResource for Launchpad {}
+impl SpaceXResource for Launchpad {
+    fn resource_name() -> String {
+        String::from("launchpads")
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug, GraphQLObject)]
 pub struct Mission {
@@ -65,7 +82,9 @@ pub struct Capsule {
 }
 
 impl SpaceXResource for Capsule {
-
+    fn resource_name() -> String {
+        String::from("capsules")
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLObject)]
@@ -86,5 +105,7 @@ pub struct Core {
 }
 
 impl SpaceXResource for Core {
-
+    fn resource_name() -> String {
+        String::from("cores")
+    }
 }

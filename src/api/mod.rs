@@ -16,7 +16,6 @@ pub struct Query;
 
 fn get_resource_collection<T, U>(
     context: &Context,
-    resource_name: String,
     date_filter: Option<DateFilter>,
     query_options: Option<U>,
     control_options: Option<OutputControlOptions>
@@ -25,35 +24,29 @@ where
     T: SpaceXResource + serde::de::DeserializeOwned,
     U: BaseQueryOptions + serde::de::DeserializeOwned
 {
-    let mut url: String = format!("{}/{}", context.base_url, resource_name);
-    url.push_str(date_filter.map_or_else(
-        || "",
-        |filter| match filter {
-            DateFilter::Past => "/past",
-            DateFilter::Upcoming => "/upcoming",
-        },
-    ));
+    let mut url: String = format!("{}/{}", context.base_url, T::resource_name());
+    url.push_str(&date_filter.map(|d| d.to_string()).unwrap_or(String::from("")));
     url.push_str(&control_options.map(|c| c.get_querystring()).unwrap_or(String::from("")));
     url.push_str(&query_options.map(|q| q.get_querystring()).unwrap_or(String::from("")));
-    
+
     info!("Sending request to: {}", url);
     let collections: Vec<T> = reqwest::get(&url)?.json()?;
     Ok(collections)
 }
 
-fn get_single_resource<T>(context: &Context, resource_name: String, id: String) -> FieldResult<T>
+fn get_single_resource<T>(context: &Context, id: String) -> FieldResult<T>
 where
     T: SpaceXResource,
     T: serde::de::DeserializeOwned,
 {
-    let url: String = format!("{}/{}/{}", context.base_url, resource_name, id);
+    let url: String = format!("{}/{}/{}", context.base_url, T::resource_name(), id);
     let result: Result<T, reqwest::Error> = reqwest::get(&url)?.json();
     info!("Sending request to: {}", url);
 
     match result {
         Ok(l) => Ok(l),
         Err(_) => {
-            let error_message: String = format!("{} with ID {} not found", resource_name, id);
+            let error_message: String = format!("{} with ID {} not found", T::resource_name(), id);
             error!("{}", error_message);
 
             Err(FieldError::new(
@@ -75,11 +68,11 @@ impl Query {
         output_control_options: Option<OutputControlOptions>,
         query_options: Option<LaunchpadQueryOptions>
     ) -> FieldResult<Vec<Launchpad>> {
-        get_resource_collection(context, "launchpads".to_owned(), None, query_options, output_control_options)
+        get_resource_collection(context, None, query_options, output_control_options)
     }
 
     fn launchpad(context: &Context, id: String) -> FieldResult<Launchpad> {
-        get_single_resource(context, "launchpads".to_owned(), id)
+        get_single_resource(context, id)
     }
 
     fn capsules(
@@ -88,11 +81,11 @@ impl Query {
         output_control_options: Option<OutputControlOptions>,
         query_options: Option<CapsuleQueryOptions>,
     ) -> FieldResult<Vec<Capsule>> {
-        get_resource_collection(context, "capsules".to_owned(), date_filter, query_options, output_control_options)
+        get_resource_collection(context, date_filter, query_options, output_control_options)
     }
 
     fn capsule(context: &Context, id: String) -> FieldResult<Capsule> {
-        get_single_resource(context, "capsules".to_owned(), id)
+        get_single_resource(context, id)
     }
 }
 
