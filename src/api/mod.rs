@@ -1,6 +1,10 @@
-pub mod types;
+pub mod base_types;
+pub mod query_types;
 use juniper::{graphql_value, EmptyMutation, FieldError, FieldResult, RootNode};
-use types::*;
+use base_types::*;
+use query_types::*;
+
+extern crate pretty_env_logger;
 
 pub struct Context {
     pub base_url: String,
@@ -10,16 +14,15 @@ impl juniper::Context for Context {}
 
 pub struct Query;
 
-fn get_resource_collection<T>(
+fn get_resource_collection<T, U>(
     context: &Context,
     resource_name: String,
-    limit: Option<i32>,
-    offset: Option<i32>,
     date_filter: Option<DateFilter>,
+    query_options: Option<U>
 ) -> FieldResult<Vec<T>>
 where
-    T: SpaceXResource,
-    T: serde::de::DeserializeOwned,
+    T: SpaceXResource + serde::de::DeserializeOwned,
+    U: BaseQueryOptions + serde::de::DeserializeOwned
 {
     let mut url: String = format!("{}/{}", context.base_url, resource_name);
     url.push_str(date_filter.map_or_else(
@@ -29,16 +32,8 @@ where
             DateFilter::Upcoming => "/upcoming",
         },
     ));
-    url.push_str(
-        &limit
-            .map(|l| format!("?limit={}", l))
-            .unwrap_or("".to_string()),
-    );
-    url.push_str(
-        &offset
-            .map(|l| format!("&offset={}", l))
-            .unwrap_or("".to_string()),
-    );
+    url.push_str(&query_options.map(|q| q.get_querystring()).unwrap_or("".to_owned()));
+    info!("Sending request to: {}", url);
     let collections: Vec<T> = reqwest::get(&url)?.json()?;
     Ok(collections)
 }
@@ -50,10 +45,14 @@ where
 {
     let url: String = format!("{}/{}/{}", context.base_url, resource_name, id);
     let result: Result<T, reqwest::Error> = reqwest::get(&url)?.json();
+    info!("Sending request to: {}", url);
+
     match result {
         Ok(l) => Ok(l),
         Err(_) => {
             let error_message: String = format!("{} with ID {} not found", resource_name, id);
+            error!("{}", error_message);
+
             Err(FieldError::new(
                 error_message.as_str(),
                 graphql_value!({
@@ -70,14 +69,25 @@ where
 impl Query {
     fn launchpads(
         context: &Context,
-        limit: Option<i32>,
-        offset: Option<i32>,
+        query_options: Option<LaunchpadQueryOptions>
     ) -> FieldResult<Vec<Launchpad>> {
-        get_resource_collection(context, "launchpads".to_owned(), limit, offset, None)
+        get_resource_collection(context, "launchpads".to_owned(), None, query_options)
     }
 
     fn launchpad(context: &Context, id: String) -> FieldResult<Launchpad> {
         get_single_resource(context, "launchpads".to_owned(), id)
+    }
+
+    fn capsules(
+        context: &Context,
+        date_filter: Option<DateFilter>,
+        query_options: Option<CapsuleQueryOptions>
+    ) -> FieldResult<Vec<Capsule>> {
+        get_resource_collection(context, "capsules".to_owned(), date_filter, query_options)
+    }
+
+    fn capsule(context: &Context, id: String) -> FieldResult<Capsule> {
+        get_single_resource(context, "capsules".to_owned(), id)
     }
 }
 

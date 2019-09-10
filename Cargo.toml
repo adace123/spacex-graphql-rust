@@ -2,6 +2,9 @@
 name = "spacex-api-rust-graphql"
 version = "0.1.0"
 authors = ["aaron.feigenbaum <aaron@enervee.com>"]
+description = "Rust/GraphQL implementation of the SpaceX API"
+homepage = "https://github.com/adace123/spacex-graphql-rust"
+repository = "https://github.com/adace123/spacex-graphql-rust"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
