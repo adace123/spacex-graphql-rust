@@ -19,7 +19,6 @@ fn main() -> Result<()> {
     pretty_env_logger::init();
     let schema = get_schema();
     let port = std::env::var("PORT").unwrap_or(String::from("3000"));
-    println!("Running on port {}", port);
     
     HttpServer::new(move || {
         App::new()
@@ -38,6 +37,6 @@ fn main() -> Result<()> {
             .service(web::resource("/graphql").route(web::post().to_async(graphql)))
             .service(web::resource("/graphiql").route(web::get().to(graphiql)))
     })
-    .bind(format!("127.0.0.1:{}", port))?
+    .bind(format!("0.0.0.0:{}", port))?
     .run()
 }
