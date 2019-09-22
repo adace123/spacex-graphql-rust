@@ -1,0 +1,1 @@
+web: ./target/release/spacex-api-rust-graphql
