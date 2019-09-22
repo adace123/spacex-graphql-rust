@@ -18,7 +18,9 @@ fn main() -> Result<()> {
     std::env::set_var("RUST_LOG", "info");
     pretty_env_logger::init();
     let schema = get_schema();
-
+    let port = std::env::var("PORT").unwrap_or(String::from("3000"));
+    println!("Running on port {}", port);
+    
     HttpServer::new(move || {
         App::new()
             .wrap(
@@ -36,6 +38,6 @@ fn main() -> Result<()> {
             .service(web::resource("/graphql").route(web::post().to_async(graphql)))
             .service(web::resource("/graphiql").route(web::get().to(graphiql)))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(format!("127.0.0.1:{}", port))?
     .run()
 }
