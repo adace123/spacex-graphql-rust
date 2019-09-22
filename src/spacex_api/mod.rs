@@ -9,8 +9,7 @@ use super::schema::query::*;
 use actix_web::{web, Error, HttpResponse};
 
 pub fn graphiql() -> HttpResponse {
-    let port = std::env::var("PORT").unwrap_or(String::from("3000"));
-    let html = graphiql_source(&format!("0.0.0.0:{}/graphql", port));
+    let html = graphiql_source("/graphql");
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(html)
