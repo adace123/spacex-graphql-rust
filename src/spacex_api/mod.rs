@@ -10,7 +10,7 @@ use actix_web::{web, Error, HttpResponse};
 
 pub fn graphiql() -> HttpResponse {
     let port = std::env::var("PORT").unwrap_or(String::from("3000"));
-    let html = graphiql_source(&format!("http://0.0.0.0:{}/graphql", port));
+    let html = graphiql_source(&format!("https://0.0.0.0:{}/graphql", port));
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(html)
