@@ -4,21 +4,6 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Data, DataStruct, DeriveInput, Fields};
 
-fn build_querystring(options: Vec<(&str, Option<String>)>) -> String {
-    match options.is_empty() {
-        true => String::from(""),
-        false => {
-            let querystring: String = options
-                .iter()
-                .filter(|(_, value)| value.is_some())
-                .map(|(key, value)| format!("{}={}", key, value.as_ref().unwrap()))
-                .collect::<Vec<String>>()
-                .join("&");
-            format!("?{}", querystring)
-        }
-    }
-}
-
 #[proc_macro_derive(query_string_builder)]
 pub fn struct_to_querystring(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
