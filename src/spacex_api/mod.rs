@@ -10,8 +10,7 @@ use actix_web::{web, Error, HttpResponse};
 
 pub fn graphiql() -> HttpResponse {
     let port = std::env::var("PORT").unwrap_or(String::from("3000"));
-    let app_name = std::env::var("HEROKU_APP_NAME").unwrap();
-    let html = graphiql_source(&format!("https://{}.herokuapp.com:{}/graphql", app_name, port));
+    let html = graphiql_source(&format!("https://calm-falls-80756.herokuapp.com:{}/graphql", port));
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(html)
