@@ -1,18 +1,24 @@
+extern crate juniper;
 extern crate pretty_env_logger;
 extern crate reqwest;
-extern crate spacex_api_rust_graphql;
+#[macro_use]
+extern crate log;
 
-use std::io::Result;
 use actix_cors::Cors;
-use spacex_api_rust_graphql::*;
 use actix_web::{http, middleware, web, App, HttpServer};
-extern crate juniper;
+use std::io::Result;
+
+mod schema;
+use schema::*;
+
+mod spacex_api;
+use spacex_api::*;
 
 fn main() -> Result<()> {
     std::env::set_var("RUST_LOG", "info");
     pretty_env_logger::init();
     let schema = get_schema();
-    
+
     HttpServer::new(move || {
         App::new()
             .wrap(

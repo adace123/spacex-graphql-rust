@@ -1,17 +1,12 @@
 use std::sync::Arc;
 
-#[macro_use]
-extern crate log;
-
 use juniper::http::graphiql::graphiql_source;
 use juniper::http::GraphQLRequest;
 
 use futures::future::Future;
 
+use super::schema::query::*;
 use actix_web::{web, Error, HttpResponse};
-
-pub mod api;
-use api::{create_schema, Context, Schema};
 
 pub fn graphiql() -> HttpResponse {
     let html = graphiql_source("http://127.0.0.1:8080/graphql");
