@@ -1,1 +1,1 @@
-web: ./target/release/spacex-api-rust-graphql
+web: ./target/release/spacex-api-rust-graphql && cargo run
