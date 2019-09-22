@@ -3,7 +3,7 @@ use juniper::GraphQLObject;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, GraphQLObject)]
-pub struct Mission {
+pub struct CoreMission {
     pub name: String,
     pub flight: i32,
 }
@@ -15,7 +15,7 @@ pub struct Core {
     pub status: String,
     pub original_launch: Option<String>,
     pub original_launch_unix: Option<i32>,
-    pub missions: Vec<Mission>,
+    pub missions: Vec<CoreMission>,
     pub reuse_count: i32,
     pub rtls_attempts: i32,
     pub rtls_landings: i32,

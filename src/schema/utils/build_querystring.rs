@@ -12,13 +12,13 @@ pub fn build_querystring(options: Vec<(&str, Option<String>)>) -> String {
         }
     }
 }
- 
+
 #[cfg(test)]
 mod tests {
-    use reqwest;
-    use crate::schema::query_types::*;
     use crate::schema::base_types::*;
     use crate::schema::common::*;
+    use crate::schema::query_types::*;
+    use reqwest;
 
     #[test]
     fn test_request() {

@@ -1,26 +1,10 @@
 use super::{build_querystring, BaseQueryOptions};
-pub use juniper::{GraphQLEnum, GraphQLInputObject};
+pub use juniper::GraphQLInputObject;
 use querystring_macro::query_string_builder;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, GraphQLEnum)]
-pub enum LaunchTimeFilter {
-    Latest,
-    Next,
-}
-
-impl std::fmt::Display for LaunchTimeFilter {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        let fmt_string = match *self {
-            LaunchTimeFilter::Latest => "latest",
-            LaunchTimeFilter::Next => "next",
-        };
-        write!(f, "{}/", fmt_string)
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug, GraphQLInputObject, query_string_builder)]
-pub struct LaunchQueryOptions {
+pub struct PayloadQueryOptions {
     pub flight_id: Option<String>,
     pub start: Option<String>,
     pub end: Option<String>,
@@ -28,7 +12,6 @@ pub struct LaunchQueryOptions {
     pub launch_year: Option<i32>,
     pub launch_date_utc: Option<i32>,
     pub launch_date_local: Option<i32>,
-    pub tbd: Option<bool>,
     pub rocket_id: Option<String>,
     pub rocket_name: Option<String>,
     pub rocket_type: Option<String>,
@@ -40,8 +23,6 @@ pub struct LaunchQueryOptions {
     pub cap_serial: Option<String>,
     pub core_flight: Option<i32>,
     pub block: Option<i32>,
-    pub gridfins: Option<bool>,
-    pub legs: Option<bool>,
     pub core_reuse: Option<bool>,
     pub capsule_reuse: Option<bool>,
     pub fairings_reused: Option<bool>,

@@ -32,7 +32,7 @@ pub fn struct_to_querystring(input: TokenStream) -> TokenStream {
     let field_name = fields.iter().map(|field| &field.ident);
 
     let expanded = quote! {
-        impl #name {
+        impl BaseQueryOptions for #name {
             fn get_querystring(self) -> String {
                 let query_options = vec![#((stringify!(#field_name), self.#field_name.map(|f| f.to_string()))),*];
                 build_querystring(query_options) 

@@ -7,7 +7,7 @@ pub struct LandingpadLocation {
     pub name: String,
     pub region: String,
     pub latitude: f64,
-    pub longitude: f64
+    pub longitude: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug, GraphQLObject)]
@@ -19,7 +19,7 @@ pub struct Landingpad {
     pub attempted_landings: i32,
     pub successful_landings: i32,
     pub wikipedia: String,
-    pub details: String
+    pub details: String,
 }
 
 impl SpaceXResource for Landingpad {

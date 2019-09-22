@@ -1,4 +1,4 @@
-use crate::common::{SpaceXResource};
+use crate::common::SpaceXResource;
 use juniper::GraphQLObject;
 use serde::{Deserialize, Serialize};
 
